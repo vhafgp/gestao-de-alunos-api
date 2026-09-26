@@ -260,3 +260,40 @@ curl -X POST http://localhost:3000/api/alunos/aluno-ana-souza/trabalhos \
 
 > Novos registros criados via API recebem ids no formato UUID (gerados com
 > `crypto.randomUUID()`), diferente dos ids legíveis usados nos dados fake acima.
+
+## Testes automatizados
+
+Os testes ficam em `test/` e batem na API por HTTP com Mocha, SuperTest e Chai. Eles cobrem o
+fluxo pedido no trabalho da disciplina: login do admin, cadastro de aluno, login do aluno e
+entrega de um trabalho.
+
+```
+test/
+  helpers/api.js       # request(BASE_URL), URL vinda do .env
+  helpers/auth.js      # comTokenDeAdmin() com token em cache e getToken(email, senha)
+  fixtures/alunos.json # massa dos testes orientados a dados
+  external/            # login, cadastro/login de aluno (um it por aluno do JSON) e fluxo de entrega
+  auth.test.js         # teste interno do login, importa o app sem subir servidor
+```
+
+Nada depende de dado pré-existente além do admin do seed: aluno, disciplina e matrícula nascem
+dentro do teste, e e-mail e matrícula ganham um timestamp para não bater 409 na rodada seguinte
+(o Mongo guarda tudo entre execuções).
+
+### Rodando local
+
+```bash
+docker run -d --name mongo-gestao-alunos -p 27017:27017 mongo:7
+cp .env.example .env   # preencha com o admin do seed
+npm start              # em um terminal
+npm test               # em outro
+```
+
+`npm test` roda com `--forbid-only`, então um `.only` esquecido derruba a execução.
+
+### Pipeline
+
+[`tests.yml`](.github/workflows/tests.yml) roda em push e pull request na `main` (ou manualmente
+pela aba Actions): sobe um Mongo como serviço, instala as dependências, inicia a API em segundo
+plano, espera `GET /` responder e só então roda `npm test`. `BASE_URL`, `ADMIN_EMAIL` e
+`ADMIN_SENHA` vêm do próprio workflow, com os valores do seed.
