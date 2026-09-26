@@ -1,0 +1,20 @@
+[
+  {
+    "nome": "Frodo Bolseiro",
+    "email": "frodo.bolseiro@example.com",
+    "matricula": "2026001",
+    "senha": "umanel"
+  },
+  {
+    "nome": "Samwise Gamgee",
+    "email": "sam.gamgee@example.com",
+    "matricula": "2026002",
+    "senha": "batatas"
+  },
+  {
+    "nome": "Aragorn Elessar",
+    "email": "aragorn.elessar@example.com",
+    "matricula": "2026003",
+    "senha": "narsil"
+  }
+]
